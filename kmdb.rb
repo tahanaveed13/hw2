@@ -100,3 +100,97 @@ puts ""
 
 # Query the cast data and loop through the results to display the cast output for each movie.
 # TODO!
+
+
+Studio.destroy_all
+Movie.destroy_all
+Actor.destroy_all
+Role.destroy_all
+
+
+warner_bros = Studio.new
+warner_bros["name"] = "Warner Bros."
+warner_bros.save
+
+batman_begins = Movie.new
+batman_begins["title"] = "Batman Begins"
+batman_begins["year_released"] = 2005
+batman_begins["rated"] = "PG-13"
+batman_begins["studio_id"] = warner_bros["id"]
+batman_begins.save
+
+dark_knight = Movie.new
+dark_knight["title"] = "The Dark Knight"
+dark_knight["year_released"] = 2008
+dark_knight["rated"] = "PG-13"
+dark_knight["studio_id"] = warner_bros["id"]
+dark_knight.save
+
+dark_knight_rises = Movie.new
+dark_knight_rises["title"] = "The Dark Knight Rises"
+dark_knight_rises["year_released"] = 2012
+dark_knight_rises["rated"] = "PG-13"
+dark_knight_rises["studio_id"] = warner_bros["id"]
+dark_knight_rises.save
+
+
+
+actors = {}
+
+actor_names = ["Christian Bale", "Michael Caine", "Liam Neeson", "Katie Holmes", "Gary Oldman",
+               "Heath Ledger", "Aaron Eckhart", "Maggie Gyllenhaal", "Tom Hardy", 
+               "Joseph Gordon-Levitt", "Anne Hathaway"]
+
+for name in actor_names
+  actor = Actor.new
+  actor["name"] = name
+  actor.save
+  actors[name] = actor # Store actor in a hash for easy lookup
+end
+
+
+
+Role.create(movie_id: batman_begins["id"], actor_id: actors["Christian Bale"]["id"], character_name: "Bruce Wayne")
+Role.create(movie_id: batman_begins["id"], actor_id: actors["Michael Caine"]["id"], character_name: "Alfred")
+Role.create(movie_id: batman_begins["id"], actor_id: actors["Liam Neeson"]["id"], character_name: "Ra's Al Ghul")
+Role.create(movie_id: batman_begins["id"], actor_id: actors["Katie Holmes"]["id"], character_name: "Rachel Dawes")
+Role.create(movie_id: batman_begins["id"], actor_id: actors["Gary Oldman"]["id"], character_name: "Commissioner Gordon")
+
+
+Role.create(movie_id: dark_knight["id"], actor_id: actors["Christian Bale"]["id"], character_name: "Bruce Wayne")
+Role.create(movie_id: dark_knight["id"], actor_id: actors["Heath Ledger"]["id"], character_name: "Joker")
+Role.create(movie_id: dark_knight["id"], actor_id: actors["Aaron Eckhart"]["id"], character_name: "Harvey Dent")
+Role.create(movie_id: dark_knight["id"], actor_id: actors["Michael Caine"]["id"], character_name: "Alfred")
+Role.create(movie_id: dark_knight["id"], actor_id: actors["Maggie Gyllenhaal"]["id"], character_name: "Rachel Dawes")
+
+
+Role.create(movie_id: dark_knight_rises["id"], actor_id: actors["Christian Bale"]["id"], character_name: "Bruce Wayne")
+Role.create(movie_id: dark_knight_rises["id"], actor_id: actors["Gary Oldman"]["id"], character_name: "Commissioner Gordon")
+Role.create(movie_id: dark_knight_rises["id"], actor_id: actors["Tom Hardy"]["id"], character_name: "Bane")
+Role.create(movie_id: dark_knight_rises["id"], actor_id: actors["Joseph Gordon-Levitt"]["id"], character_name: "John Blake")
+Role.create(movie_id: dark_knight_rises["id"], actor_id: actors["Anne Hathaway"]["id"], character_name: "Selina Kyle")
+
+# Print movies
+puts "Movies"
+puts "======"
+puts ""
+
+movies = Movie.all
+for movie in movies
+  studio = Studio.find_by({ "id" => movie["studio_id"] })
+  puts "#{movie["title"].ljust(20)} #{movie["year_released"]} #{movie["rated"].ljust(5)} #{studio["name"]}"
+end
+
+
+# Print cast list
+puts ""
+puts "Top Cast"
+puts "========"
+puts ""
+
+roles = Role.all
+for role in roles
+  movie = Movie.find_by({ "id" => role["movie_id"] })
+  actor = Actor.find_by({ "id" => role["actor_id"] })
+  puts "#{movie["title"].ljust(20)} #{actor["name"].ljust(20)} #{role["character_name"]}"
+end
